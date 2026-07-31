@@ -16,37 +16,96 @@ Planner → Search Agent → Summarizer → Fact-Checker → Report Writer
 
 ## Quick start
 
-### 1. Backend
+Get a free Groq key first: **https://console.groq.com/keys** (no credit card
+required). You'll paste it into `backend/.env` in step 3 below.
 
+Run the backend commands in one terminal, and the frontend commands in a
+**second** terminal (the backend must stay running).
+
+### macOS / Linux
+
+**Backend:**
 ```bash
 cd backend
-cp .env.example .env       # then edit .env and paste your GROQ_API_KEY
-./run.sh                   # creates a venv, installs deps, starts on :8000
-```
-
-Get a free Groq key at **https://console.groq.com/keys** (no credit card
-required). Paste it into `backend/.env` as `GROQ_API_KEY=...`.
-
-If you'd rather run it manually instead of `run.sh`:
-
-```bash
-cd backend
-python3 -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # add your key
+cp .env.example .env
+nano .env                  # paste GROQ_API_KEY=..., save, exit (or use any editor)
 uvicorn app.main:app --reload --port 8000
 ```
 
-### 2. Frontend
-
+**Frontend** (new terminal):
 ```bash
 cd frontend
 npm install
-npm run dev                # starts on :5173
+npm run dev
 ```
+
+> macOS/Linux shortcut: `cd backend && ./run.sh` does the venv creation, install,
+> and `.env` scaffolding for you in one command — just add your key to the
+> generated `.env` before it starts serving.
+
+### Windows (PowerShell)
+
+**Backend:**
+```powershell
+cd backend
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+Copy-Item .env.example .env
+notepad .env                # paste GROQ_API_KEY=..., save, close
+uvicorn app.main:app --reload --port 8000
+```
+
+If activation is blocked by execution policy, run this once first:
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
+**Frontend** (new PowerShell window):
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+### Windows (Command Prompt / cmd.exe)
+
+**Backend:**
+```cmd
+cd backend
+py -3.12 -m venv .venv
+.venv\Scripts\activate.bat
+pip install -r requirements.txt
+copy .env.example .env
+notepad .env
+uvicorn app.main:app --reload --port 8000
+```
+
+**Frontend** (new cmd window):
+```cmd
+cd frontend
+npm install
+npm run dev
+```
+
+### Then, on any OS
 
 Open **http://localhost:5173**, type a research question, pick a depth and
 audience, and submit.
+
+**Health check** (optional, confirms the backend + key are working):
+```bash
+curl http://localhost:8000/api/health
+```
+```powershell
+Invoke-RestMethod http://localhost:8000/api/health
+```
+You should see `"groq_key_configured": true`. If it says `false`, re-check
+`backend/.env` and restart `uvicorn`.
+
 
 ## How it works
 
